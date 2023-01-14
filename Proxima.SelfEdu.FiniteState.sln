@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxima.SelfEdu.FiniteState", "Proxima.SelfEdu.FiniteState\Proxima.SelfEdu.FiniteState.csproj", "{DB9240A5-84A6-4BB1-BBEE-7329CAE67A9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxima.SelfEdu.FiniteState.Tests", "Proxima.SelfEdu.FiniteState.Tests\Proxima.SelfEdu.FiniteState.Tests.csproj", "{589687D9-E28D-418F-ADAD-1280770B026E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB9240A5-84A6-4BB1-BBEE-7329CAE67A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB9240A5-84A6-4BB1-BBEE-7329CAE67A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB9240A5-84A6-4BB1-BBEE-7329CAE67A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB9240A5-84A6-4BB1-BBEE-7329CAE67A9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{589687D9-E28D-418F-ADAD-1280770B026E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{589687D9-E28D-418F-ADAD-1280770B026E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{589687D9-E28D-418F-ADAD-1280770B026E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{589687D9-E28D-418F-ADAD-1280770B026E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
