@@ -17,13 +17,6 @@ public static class WindowExampleMachine
     }
 }
 
-public record TestMessage<T> : IMessage where T : TestMessage<T>, new()
-{
-    private static readonly Lazy<T> LazyInstance = new(() => new T());
-
-    public static T Instance => LazyInstance.Value;
-}
-
 public record OpenMessage : TestMessage<OpenMessage>;
 
 public record CloseMessage : TestMessage<CloseMessage>;
