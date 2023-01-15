@@ -23,4 +23,4 @@ public record CloseMessage : TestMessage<CloseMessage>;
 
 public record SmashMessage : TestMessage<SmashMessage>;
     
-public enum WindowState { Opened, Closed };
+public enum WindowState { Opened, Closed, Unknown };

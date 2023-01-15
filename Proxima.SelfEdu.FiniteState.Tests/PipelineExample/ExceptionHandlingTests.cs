@@ -31,4 +31,11 @@ public class ExceptionHandlingTests
         Assert.DoesNotThrow(() => _fsm.Handle(SecondOperationMessage.Instance));
         Assert.Throws<FiniteStateMachineOperationException>(() => _oppositeFsm.Handle(SecondOperationMessage.Instance));
     }
+
+    [Test]
+    public void Throws_WhenAddingTransition_FromFinalState()
+    {
+        Assert.Throws<FiniteStateMachineSetupException>(() =>
+            _fsm.AddTransition<FirstOperationMessage>(PipelineStep.Finish, PipelineStep.Start));
+    }
 }

@@ -31,10 +31,4 @@ public class DefaultSetupTests
         _fsm.Handle(CloseMessage.Instance);
         Assert.That(_fsm.CurrentState, Is.EqualTo(WindowState.Closed));
     }
-
-    [Test]
-    public void HandleCall_ForUnknownMessage_DoesNotThrow()
-    {
-        Assert.DoesNotThrow(() => _fsm.Handle(SmashMessage.Instance));
-    }
 }

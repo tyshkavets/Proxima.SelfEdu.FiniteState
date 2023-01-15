@@ -87,6 +87,11 @@ public class FiniteStateMachine<TState>
         {
             throw new FiniteStateMachineSetupException("Both ends of transition should be added first.");
         }
+
+        if (_finalStates.Contains(fromState))
+        {
+            throw new FiniteStateMachineSetupException("Cannot transition from final state.");
+        }
         
         _transitions[key] = toState;
     }

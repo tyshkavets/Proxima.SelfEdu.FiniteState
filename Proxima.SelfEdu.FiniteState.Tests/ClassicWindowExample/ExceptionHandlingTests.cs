@@ -35,4 +35,20 @@ public class ExceptionHandlingTests
         Assert.DoesNotThrow(() =>
             _oppositeFsm.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened));
     }
+
+    [Test]
+    public void HandleCall_ForUnknownMessage_DoesNotThrow()
+    {
+        Assert.DoesNotThrow(() => _fsm.Handle(SmashMessage.Instance));
+    }
+
+    [Test]
+    public void Transition_ToTheUnknownState_IsNotAllowed()
+    {
+        Assert.Throws<FiniteStateMachineSetupException>(() =>
+            _fsm.AddTransition<OpenMessage>(WindowState.Opened, WindowState.Unknown));
+
+        Assert.Throws<FiniteStateMachineSetupException>(() =>
+            _fsm.AddTransition<OpenMessage>(WindowState.Unknown, WindowState.Opened));
+    }
 }
