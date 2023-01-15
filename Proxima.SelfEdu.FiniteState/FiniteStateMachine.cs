@@ -1,7 +1,10 @@
-﻿namespace Proxima.SelfEdu.FiniteState;
+﻿using Microsoft.Extensions.Options;
+
+namespace Proxima.SelfEdu.FiniteState;
 
 public class FiniteStateMachine<TState>
 {
+    private readonly FiniteStateMachineOptions<TState> _options;
     private readonly HashSet<TState> _states;
     private readonly HashSet<TState> _finalStates;
     private readonly IDictionary<(TState, Type), TState> _transitions;
@@ -10,8 +13,13 @@ public class FiniteStateMachine<TState>
     private bool _startingStateSet;
     private TState _currentState;
 
-    public FiniteStateMachine()
+    public FiniteStateMachine() : this(default)
     {
+    }
+
+    public FiniteStateMachine(IOptions<FiniteStateMachineOptions<TState>> options)
+    {
+        _options = options?.Value ?? new FiniteStateMachineOptions<TState>();
         _states = new HashSet<TState>();
         _finalStates = new HashSet<TState>();
         _transitions = new Dictionary<(TState, Type), TState>();
@@ -36,6 +44,12 @@ public class FiniteStateMachine<TState>
         if (_isFinished)
         {
             // If machine has already finished, no transitions should occur and no messages handled.
+
+            if (_options.ThrowIfHandleCalledOnFinishedMachine)
+            {
+                throw new FiniteStateMachineOperationException("Machine is finished");
+            }
+            
             return;
         }
 
@@ -44,11 +58,18 @@ public class FiniteStateMachine<TState>
         if (_transitions.ContainsKey(key))
         {
             _currentState = _transitions[key];
+            _options.OnTransition?.Invoke(message, _currentState);
+            _options.OnAchievedState?.Invoke(_currentState);
 
             if (_finalStates.Contains(_currentState))
             {
                 _isFinished = true;
+                _options.OnAchievedFinalState?.Invoke(_currentState);
             }
+        }
+        else
+        {
+            _options.OnNoTransition?.Invoke(message, _currentState);
         }
     }
     
@@ -56,7 +77,7 @@ public class FiniteStateMachine<TState>
     {
         var key = (fromState, typeof(TMessage));
 
-        if (_transitions.ContainsKey(key))
+        if (_transitions.ContainsKey(key) && _options.ThrowIfTransitionAlreadyExists)
         {
             throw new FiniteStateMachineSetupException(
                 $"Already registered transition from {fromState} on {typeof(TMessage).Name}");
@@ -72,7 +93,7 @@ public class FiniteStateMachine<TState>
 
     public void AddState(TState state)
     {
-        if (_states.Contains(state))
+        if (_states.Contains(state) && _options.ThrowIfDuplicateStatesAdded)
         {
             throw new FiniteStateMachineSetupException($"State {state} has already been added.");
         }
@@ -92,11 +113,9 @@ public class FiniteStateMachine<TState>
         {
             throw new FiniteStateMachineSetupException("Cannot set multiple starting states");
         }
-        else
-        {
-            AddState(state);
-            _currentState = state;
-            _startingStateSet = true;
-        }
+
+        AddState(state);
+        _currentState = state;
+        _startingStateSet = true;
     }
 }

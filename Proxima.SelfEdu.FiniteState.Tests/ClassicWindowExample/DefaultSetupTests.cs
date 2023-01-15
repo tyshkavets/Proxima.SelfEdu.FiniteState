@@ -1,31 +1,13 @@
-namespace Proxima.SelfEdu.FiniteState.Tests;
+namespace Proxima.SelfEdu.FiniteState.Tests.ClassicWindowExample;
 
-public class ClassicWindowExampleTests
+public class DefaultSetupTests
 {
-    private record TestMessage<T> : IMessage where T : TestMessage<T>, new()
-    {
-        private static readonly Lazy<T> LazyInstance = new(() => new T());
-
-        public static T Instance => LazyInstance.Value;
-    }
-    private record OpenMessage : TestMessage<OpenMessage>;
-
-    private record CloseMessage : TestMessage<CloseMessage>;
-
-    private record SmashMessage : TestMessage<SmashMessage>;
-    
-    public enum WindowState { Opened, Closed };
-
     private FiniteStateMachine<WindowState> _fsm;
 
     [SetUp]
     public void Setup()
     {
-        _fsm = new FiniteStateMachine<WindowState>();
-        _fsm.AddStartingState(WindowState.Closed);
-        _fsm.AddState(WindowState.Opened);
-        _fsm.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened);
-        _fsm.AddTransition<CloseMessage>(WindowState.Opened, WindowState.Closed);
+        _fsm = WindowExampleMachine.Build(null);
     }
 
     [Test]
