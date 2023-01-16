@@ -30,7 +30,7 @@ public class FiniteStateMachine<TState>
     }
 
     /// <summary>
-    /// True if machine has achieved one of the final states.
+    /// True if machine has entered one of the final states.
     /// </summary>
     public bool IsFinished => _isFinished;
 
@@ -82,12 +82,12 @@ public class FiniteStateMachine<TState>
         {
             _currentState = _transitions[key];
             _eventHandler.OnTransition(message, _currentState);
-            _eventHandler.OnAchievedState(_currentState);
+            _eventHandler.OnEnteringState(_currentState);
 
             if (_finalStates.Contains(_currentState))
             {
                 _isFinished = true;
-                _eventHandler.OnAchievedFinalState(_currentState);
+                _eventHandler.OnEnteringFinalState(_currentState);
             }
         }
         else

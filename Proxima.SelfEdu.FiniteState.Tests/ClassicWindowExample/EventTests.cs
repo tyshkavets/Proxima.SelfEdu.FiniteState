@@ -5,7 +5,7 @@ namespace Proxima.SelfEdu.FiniteState.Tests.ClassicWindowExample;
 public class EventTests
 {
     private FiniteStateMachine<WindowState> _fsm;
-    private int onAchievedCalls;
+    private int onEnteredCalls;
     private int onTransitionCalls;
     private int onNoTransitionCalls;
     
@@ -14,22 +14,22 @@ public class EventTests
     {
         var eventHandler = new DefaultFiniteStateMachineEventHandler<WindowState>
         {
-            OnAchievedState = _ => onAchievedCalls++,
+            OnEnteringState = _ => onEnteredCalls++,
             OnTransition = (_, _) => onTransitionCalls++,
             OnNoTransition = (_, _) => onNoTransitionCalls++,
         };
 
-        onAchievedCalls = onTransitionCalls = onNoTransitionCalls = default;
+        onEnteredCalls = onTransitionCalls = onNoTransitionCalls = default;
 
         _fsm = WindowExampleMachine.Build(null, eventHandler);
     }
     
     [Test]
-    public void OnAchievedState_IsCalled_WhenStateAchieved()
+    public void OnEnteredState_IsCalled_WhenStateEntered()
     {
         _fsm.Handle(OpenMessage.Instance);
         
-        Assert.That(onAchievedCalls, Is.EqualTo(1));
+        Assert.That(onEnteredCalls, Is.EqualTo(1));
     }
 
     [Test]

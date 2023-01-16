@@ -3,8 +3,8 @@ namespace Proxima.SelfEdu.FiniteState.Configuration;
 public class DefaultFiniteStateMachineEventHandler<TState> : IFiniteStateMachineEventHandler<TState>
 {
     public Action<IMessage, TState> OnTransition { get; init; } = (_, _) => { };
-    public Action<TState> OnAchievedState { get; init; } = _ => { };
-    public Action<TState> OnAchievedFinalState { get; init; } = _ => { };
+    public Action<TState> OnEnteringState { get; init; } = _ => { };
+    public Action<TState> OnEnteringFinalState { get; init; } = _ => { };
     public Action<IMessage, TState> OnNoTransition { get; init; } = (_, _) => { };
 
     public DefaultFiniteStateMachineEventHandler()
@@ -23,9 +23,9 @@ public class DefaultFiniteStateMachineEventHandler<TState> : IFiniteStateMachine
             OnTransition = eventHandler.OnTransition;
         }
         
-        if (eventHandler.OnAchievedState != default)
+        if (eventHandler.OnEnteringState != default)
         {
-            OnAchievedState = eventHandler.OnAchievedState;
+            OnEnteringState = eventHandler.OnEnteringState;
         }
 
         if (eventHandler.OnNoTransition != default)
@@ -33,9 +33,9 @@ public class DefaultFiniteStateMachineEventHandler<TState> : IFiniteStateMachine
             OnNoTransition = eventHandler.OnNoTransition;
         }
 
-        if (eventHandler.OnAchievedFinalState != default)
+        if (eventHandler.OnEnteringFinalState != default)
         {
-            OnAchievedFinalState = eventHandler.OnAchievedFinalState;
+            OnEnteringFinalState = eventHandler.OnEnteringFinalState;
         }
     }
 }

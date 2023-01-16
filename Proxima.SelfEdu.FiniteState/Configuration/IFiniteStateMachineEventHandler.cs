@@ -10,15 +10,15 @@ public interface IFiniteStateMachineEventHandler<in TState>
     /// <summary>
     /// Called when machine enters a new state. Accepts that state as a parameter.
     /// </summary>
-    public Action<TState> OnAchievedState { get; }
+    public Action<TState> OnEnteringState { get; }
 
     /// <summary>
     /// Called when machine enters a final state. Accepts that state as a parameter, as machine can have multiple
     /// final states that you may want to differentiate between in handling.
-    /// Note that OnAchievedState is a separate event handler, and it, too, will be called when machine enters
-    /// a final state. OnAchievedState will be called first.
+    /// Note that OnEnteringState is a separate event handler, and it, too, will be called when machine enters
+    /// a final state. OnEnteringState will be called first.
     /// </summary>
-    public Action<TState> OnAchievedFinalState { get; }
+    public Action<TState> OnEnteringFinalState { get; }
 
     /// <summary>
     /// Called when machine processes a message that does not cause a change of state.

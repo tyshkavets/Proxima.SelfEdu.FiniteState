@@ -4,7 +4,7 @@ public class FiniteStateMachineOptions
 {
     /// <summary>
     /// Determines whether or not machine should throw an exception if a message arrives after machine
-    /// has achieved one of the final states. Disabled by default.
+    /// has entered one of the final states. Disabled by default.
     /// </summary>
     public bool ThrowIfHandleCalledOnFinishedMachine { get; set; }
 

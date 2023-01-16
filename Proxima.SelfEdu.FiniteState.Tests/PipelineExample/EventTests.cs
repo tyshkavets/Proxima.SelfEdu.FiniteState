@@ -12,7 +12,7 @@ public class EventTests
     {
         var eventHandler = new DefaultFiniteStateMachineEventHandler<PipelineStep>
         {
-            OnAchievedFinalState = _ => onFinishCalls++,
+            OnEnteringFinalState = _ => onFinishCalls++,
         };
 
         onFinishCalls = 0;
