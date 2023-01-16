@@ -25,10 +25,29 @@ public class FiniteStateMachine<TState>
         _transitions = new Dictionary<(TState, Type), TState>();
     }
 
+    /// <summary>
+    /// True if machine has achieved one of the final states.
+    /// </summary>
     public bool IsFinished => _isFinished;
 
+    /// <summary>
+    /// Current state the machine is in.
+    /// </summary>
     public TState CurrentState => _currentState;
 
+    /// <summary>
+    /// Processes a message received by the machine.
+    /// </summary>
+    /// <param name="message">Input message sent to the machine.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Message must not be null.
+    /// </exception>
+    /// <exception cref="FiniteStateMachineSetupException">
+    /// Machine is not set up properly and does not have initial state yet.
+    /// </exception>
+    /// <exception cref="FiniteStateMachineOperationException">
+    /// Machine cannot process messages as it is already finished.
+    /// </exception>
     public void Handle(IMessage message)
     {
         if (message == default)
@@ -73,6 +92,14 @@ public class FiniteStateMachine<TState>
         }
     }
     
+    /// <summary>
+    /// Defines a state-transition rule. Machine in state fromState must transition
+    /// to state toState when message of type TMessage is received.
+    /// </summary>
+    /// <param name="fromState">Machine state this rule is applicable for.</param>
+    /// <param name="toState">State that machine ends up in if this rule is applied.</param>
+    /// <typeparam name="TMessage">Type of message received.</typeparam>
+    /// <exception cref="FiniteStateMachineSetupException">Thrown if rule cannot be setup.</exception>
     public void AddTransition<TMessage>(TState fromState, TState toState)
     {
         var key = (fromState, typeof(TMessage));
@@ -96,6 +123,13 @@ public class FiniteStateMachine<TState>
         _transitions[key] = toState;
     }
 
+    /// <summary>
+    /// Registers a state.
+    /// </summary>
+    /// <param name="state">Instance of a state. Must be unique.</param>
+    /// <exception cref="FiniteStateMachineSetupException">
+    /// Thrown if duplicate state is added and this exception is allowed in options. On by default.
+    /// </exception>
     public void AddState(TState state)
     {
         if (_states.Contains(state) && _options.ThrowIfDuplicateStatesAdded)
@@ -106,12 +140,23 @@ public class FiniteStateMachine<TState>
         _states.Add(state);
     }
 
+    /// <summary>
+    /// Registers a state that is considered "final" for the machine. Machine can have any number of final states.
+    /// Machine can have zero final states.
+    /// </summary>
+    /// <param name="state">Instance of a state. Must be unique.</param>
     public void AddFinalState(TState state)
     {
         AddState(state);
         _finalStates.Add(state);
     }
 
+    /// <summary>
+    /// Registers a state that machine is in upon creation. Machine must have exactly one starting state.
+    /// Sending messages to machine without a starting state will cause an exception.
+    /// </summary>
+    /// <param name="state">Starting state of the machine.</param>
+    /// <exception cref="FiniteStateMachineSetupException">Thrown if another starting set is already set.</exception>
     public void AddStartingState(TState state)
     {
         if (_startingStateSet)
