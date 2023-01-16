@@ -54,10 +54,7 @@ public class FiniteStateMachine<TState>
     /// </exception>
     public void Handle(IMessage message)
     {
-        if (message == default)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        var _ = message ?? throw new ArgumentNullException(nameof(message));
         
         if (!_startingStateSet)
         {
