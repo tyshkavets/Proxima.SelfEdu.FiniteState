@@ -7,7 +7,7 @@ public class DefaultSetupTests
     [SetUp]
     public void Setup()
     {
-        _fsm = WindowExampleMachine.Build(null);
+        _fsm = WindowExampleMachine.Build(default, default);
     }
 
     [Test]

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
+using Proxima.SelfEdu.FiniteState.Configuration;
 
 namespace Proxima.SelfEdu.FiniteState;
 
 public class FiniteStateMachine<TState>
 {
-    private readonly FiniteStateMachineOptions<TState> _options;
+    private readonly FiniteStateMachineOptions _options;
+    private readonly IFiniteStateMachineEventHandler<TState> _eventHandler;
     private readonly HashSet<TState> _states;
     private readonly HashSet<TState> _finalStates;
     private readonly IDictionary<(TState, Type), TState> _transitions;
@@ -13,13 +15,15 @@ public class FiniteStateMachine<TState>
     private bool _startingStateSet;
     private TState _currentState;
 
-    public FiniteStateMachine() : this(default)
+    public FiniteStateMachine() : this(default, default)
     {
     }
 
-    public FiniteStateMachine(IOptions<FiniteStateMachineOptions<TState>> options)
+    public FiniteStateMachine(IOptions<FiniteStateMachineOptions> options,
+        IFiniteStateMachineEventHandler<TState> eventHandler)
     {
-        _options = options?.Value ?? new FiniteStateMachineOptions<TState>();
+        _options = options?.Value ?? new FiniteStateMachineOptions();
+        _eventHandler = new DefaultFiniteStateMachineEventHandler<TState>(eventHandler);
         _states = new HashSet<TState>();
         _finalStates = new HashSet<TState>();
         _transitions = new Dictionary<(TState, Type), TState>();
@@ -77,18 +81,18 @@ public class FiniteStateMachine<TState>
         if (_transitions.ContainsKey(key))
         {
             _currentState = _transitions[key];
-            _options.OnTransition?.Invoke(message, _currentState);
-            _options.OnAchievedState?.Invoke(_currentState);
+            _eventHandler.OnTransition(message, _currentState);
+            _eventHandler.OnAchievedState(_currentState);
 
             if (_finalStates.Contains(_currentState))
             {
                 _isFinished = true;
-                _options.OnAchievedFinalState?.Invoke(_currentState);
+                _eventHandler.OnAchievedFinalState(_currentState);
             }
         }
         else
         {
-            _options.OnNoTransition?.Invoke(message, _currentState);
+            _eventHandler.OnNoTransition(message, _currentState);
         }
     }
     

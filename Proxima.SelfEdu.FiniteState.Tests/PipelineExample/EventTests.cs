@@ -1,3 +1,5 @@
+using Proxima.SelfEdu.FiniteState.Configuration;
+
 namespace Proxima.SelfEdu.FiniteState.Tests.PipelineExample;
 
 public class EventTests
@@ -8,14 +10,14 @@ public class EventTests
     [SetUp]
     public void Setup()
     {
-        var options = new FiniteStateMachineOptions<PipelineStep>
+        var eventHandler = new DefaultFiniteStateMachineEventHandler<PipelineStep>
         {
             OnAchievedFinalState = _ => onFinishCalls++,
         };
 
         onFinishCalls = 0;
 
-        _fsm = PipelineExampleMachine.Build(options);
+        _fsm = PipelineExampleMachine.Build(default, eventHandler);
     }
 
     [Test]

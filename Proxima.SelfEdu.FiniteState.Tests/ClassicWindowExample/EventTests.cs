@@ -1,3 +1,5 @@
+using Proxima.SelfEdu.FiniteState.Configuration;
+
 namespace Proxima.SelfEdu.FiniteState.Tests.ClassicWindowExample;
 
 public class EventTests
@@ -10,7 +12,7 @@ public class EventTests
     [SetUp]
     public void Setup()
     {
-        var options = new FiniteStateMachineOptions<WindowState>
+        var eventHandler = new DefaultFiniteStateMachineEventHandler<WindowState>
         {
             OnAchievedState = _ => onAchievedCalls++,
             OnTransition = (_, _) => onTransitionCalls++,
@@ -19,7 +21,7 @@ public class EventTests
 
         onAchievedCalls = onTransitionCalls = onNoTransitionCalls = default;
 
-        _fsm = WindowExampleMachine.Build(options);
+        _fsm = WindowExampleMachine.Build(null, eventHandler);
     }
     
     [Test]

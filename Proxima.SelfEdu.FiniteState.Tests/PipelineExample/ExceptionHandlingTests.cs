@@ -1,3 +1,5 @@
+using Proxima.SelfEdu.FiniteState.Configuration;
+
 namespace Proxima.SelfEdu.FiniteState.Tests.PipelineExample;
 
 public class ExceptionHandlingTests
@@ -8,16 +10,16 @@ public class ExceptionHandlingTests
     [SetUp]
     public void Setup()
     {
-        _fsm = PipelineExampleMachine.Build(null);
+        _fsm = PipelineExampleMachine.Build(default, default);
 
-        var oppositeOptions = new FiniteStateMachineOptions<PipelineStep>
+        var oppositeOptions = new FiniteStateMachineOptions
         {
             ThrowIfDuplicateStatesAdded = false,
             ThrowIfTransitionAlreadyExists = false,
             ThrowIfHandleCalledOnFinishedMachine = true
         };
 
-        _oppositeFsm = PipelineExampleMachine.Build(oppositeOptions);
+        _oppositeFsm = PipelineExampleMachine.Build(oppositeOptions, default);
     }
 
     [Test]

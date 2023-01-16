@@ -1,12 +1,12 @@
-namespace Proxima.SelfEdu.FiniteState;
+namespace Proxima.SelfEdu.FiniteState.Configuration;
 
-public class FiniteStateMachineOptions<TState>
+public class FiniteStateMachineOptions
 {
     /// <summary>
     /// Determines whether or not machine should throw an exception if a message arrives after machine
     /// has achieved one of the final states. Disabled by default.
     /// </summary>
-    public bool ThrowIfHandleCalledOnFinishedMachine { get; set; } = false;
+    public bool ThrowIfHandleCalledOnFinishedMachine { get; set; }
 
     /// <summary>
     /// Determines whether or not machine should throw an exception if a state-transition rule is added during setup
@@ -20,12 +20,4 @@ public class FiniteStateMachineOptions<TState>
     /// Enabled by default.
     /// </summary>
     public bool ThrowIfDuplicateStatesAdded { get; set; } = true;
-
-    public Action<IMessage, TState> OnTransition;
-
-    public Action<TState> OnAchievedState;
-
-    public Action<TState> OnAchievedFinalState;
-
-    public Action<IMessage, TState> OnNoTransition;
 }

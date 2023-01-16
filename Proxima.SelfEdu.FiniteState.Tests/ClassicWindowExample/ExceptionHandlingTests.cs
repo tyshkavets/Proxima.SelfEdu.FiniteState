@@ -1,3 +1,5 @@
+using Proxima.SelfEdu.FiniteState.Configuration;
+
 namespace Proxima.SelfEdu.FiniteState.Tests.ClassicWindowExample;
 
 public class ExceptionHandlingTests
@@ -8,15 +10,15 @@ public class ExceptionHandlingTests
     [SetUp]
     public void Setup()
     {
-        _fsm = WindowExampleMachine.Build(null);
+        _fsm = WindowExampleMachine.Build(default, default);
 
-        var oppositeOptions = new FiniteStateMachineOptions<WindowState>
+        var oppositeOptions = new FiniteStateMachineOptions
         {
             ThrowIfDuplicateStatesAdded = false,
             ThrowIfTransitionAlreadyExists = false,
         };
 
-        _oppositeFsm = WindowExampleMachine.Build(oppositeOptions);
+        _oppositeFsm = WindowExampleMachine.Build(oppositeOptions, default);
     }
 
     [Test]

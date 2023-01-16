@@ -7,7 +7,7 @@ public class DefaultSetupTests
     [SetUp]
     public void Setup()
     {
-        _fsm = PipelineExampleMachine.Build(null);
+        _fsm = PipelineExampleMachine.Build(default, default);
     }
 
     [Test]

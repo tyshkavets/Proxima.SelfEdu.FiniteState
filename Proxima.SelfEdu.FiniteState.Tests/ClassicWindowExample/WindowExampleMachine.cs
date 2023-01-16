@@ -1,13 +1,15 @@
 using Microsoft.Extensions.Options;
+using Proxima.SelfEdu.FiniteState.Configuration;
 
 namespace Proxima.SelfEdu.FiniteState.Tests.ClassicWindowExample;
 
 public static class WindowExampleMachine
 {
-    public static FiniteStateMachine<WindowState> Build(FiniteStateMachineOptions<WindowState> options)
+    public static FiniteStateMachine<WindowState> Build(FiniteStateMachineOptions options,
+        IFiniteStateMachineEventHandler<WindowState> eventHandler)
     {
         var wrappedOptions = Options.Create(options);
-        var fsm = new FiniteStateMachine<WindowState>(wrappedOptions);
+        var fsm = new FiniteStateMachine<WindowState>(wrappedOptions, eventHandler);
         fsm.AddStartingState(WindowState.Closed);
         fsm.AddState(WindowState.Opened);
         fsm.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened);
