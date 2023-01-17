@@ -11,6 +11,11 @@ public interface IFiniteStateMachineEventHandler<in TState>
     /// Called when machine enters a new state. Accepts that state as a parameter.
     /// </summary>
     public Action<TState> OnEnteringState { get; }
+    
+    /// <summary>
+    /// Called when machine leaves a state. Accepts that state as a parameter.
+    /// </summary>
+    public Action<TState> OnLeavingState { get; }
 
     /// <summary>
     /// Called when machine enters a final state. Accepts that state as a parameter, as machine can have multiple

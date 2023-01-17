@@ -37,7 +37,27 @@ public class FiniteStateMachine<TState>
     /// <summary>
     /// Current state the machine is in.
     /// </summary>
-    public TState CurrentState => _currentState;
+    public TState CurrentState
+    {
+        get => _currentState;
+        private set
+        {
+            if (_currentState.Equals(value))
+            {
+                return;
+            }
+
+            _eventHandler.OnLeavingState(_currentState);
+            _currentState = value;
+            _eventHandler.OnEnteringState(_currentState);
+            
+            if (_finalStates.Contains(_currentState))
+            {
+                _isFinished = true;
+                _eventHandler.OnEnteringFinalState(_currentState);
+            }
+        }
+    }
 
     /// <summary>
     /// Processes a message received by the machine.
@@ -77,15 +97,8 @@ public class FiniteStateMachine<TState>
 
         if (_transitions.ContainsKey(key))
         {
-            _currentState = _transitions[key];
+            CurrentState = _transitions[key];
             _eventHandler.OnTransition(message, _currentState);
-            _eventHandler.OnEnteringState(_currentState);
-
-            if (_finalStates.Contains(_currentState))
-            {
-                _isFinished = true;
-                _eventHandler.OnEnteringFinalState(_currentState);
-            }
         }
         else
         {

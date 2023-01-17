@@ -5,21 +5,23 @@ namespace Proxima.SelfEdu.FiniteState.Tests.ClassicWindowExample;
 public class EventTests
 {
     private FiniteStateMachine<WindowState> _fsm;
-    private int onEnteredCalls;
-    private int onTransitionCalls;
-    private int onNoTransitionCalls;
+    private int _onEnteredCalls;
+    private int _onLeavingCalls;
+    private int _onTransitionCalls;
+    private int _onNoTransitionCalls;
     
     [SetUp]
     public void Setup()
     {
         var eventHandler = new DefaultFiniteStateMachineEventHandler<WindowState>
         {
-            OnEnteringState = _ => onEnteredCalls++,
-            OnTransition = (_, _) => onTransitionCalls++,
-            OnNoTransition = (_, _) => onNoTransitionCalls++,
+            OnEnteringState = _ => _onEnteredCalls++,
+            OnTransition = (_, _) => _onTransitionCalls++,
+            OnNoTransition = (_, _) => _onNoTransitionCalls++,
+            OnLeavingState = _ => _onLeavingCalls++
         };
 
-        onEnteredCalls = onTransitionCalls = onNoTransitionCalls = default;
+        _onEnteredCalls = _onTransitionCalls = _onNoTransitionCalls = _onLeavingCalls = default;
 
         _fsm = WindowExampleMachine.Build(null, eventHandler);
     }
@@ -28,8 +30,13 @@ public class EventTests
     public void OnEnteredState_IsCalled_WhenStateEntered()
     {
         _fsm.Handle(OpenMessage.Instance);
-        
-        Assert.That(onEnteredCalls, Is.EqualTo(1));
+        _fsm.Handle(OpenMessage.Instance);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(_onEnteredCalls, Is.EqualTo(1));
+            Assert.That(_onLeavingCalls, Is.EqualTo(1));
+        });
     }
 
     [Test]
@@ -40,8 +47,11 @@ public class EventTests
         _fsm.Handle(OpenMessage.Instance);
         _fsm.Handle(CloseMessage.Instance);
         _fsm.Handle(CloseMessage.Instance);
-        
-        Assert.That(onTransitionCalls, Is.EqualTo(2));
-        Assert.That(onNoTransitionCalls, Is.EqualTo(3));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(_onTransitionCalls, Is.EqualTo(2));
+            Assert.That(_onNoTransitionCalls, Is.EqualTo(3));
+        });
     }
 }

@@ -4,6 +4,7 @@ public class DefaultFiniteStateMachineEventHandler<TState> : IFiniteStateMachine
 {
     public Action<IMessage, TState> OnTransition { get; init; } = (_, _) => { };
     public Action<TState> OnEnteringState { get; init; } = _ => { };
+    public Action<TState> OnLeavingState { get; init; } = _ => { };
     public Action<TState> OnEnteringFinalState { get; init; } = _ => { };
     public Action<IMessage, TState> OnNoTransition { get; init; } = (_, _) => { };
 
@@ -26,6 +27,11 @@ public class DefaultFiniteStateMachineEventHandler<TState> : IFiniteStateMachine
         if (eventHandler.OnEnteringState != default)
         {
             OnEnteringState = eventHandler.OnEnteringState;
+        }
+
+        if (eventHandler.OnLeavingState != default)
+        {
+            OnLeavingState = eventHandler.OnLeavingState;
         }
 
         if (eventHandler.OnNoTransition != default)
