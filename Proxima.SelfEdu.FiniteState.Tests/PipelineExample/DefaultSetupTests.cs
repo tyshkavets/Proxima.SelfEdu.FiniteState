@@ -15,6 +15,7 @@ public class DefaultSetupTests
     {
         _fsm.Handle(FirstOperationMessage.Instance);
         Assert.That(_fsm.IsFinished, Is.False);
+        _fsm.Handle(RetryOperationMessage.Instance);
         _fsm.Handle(SecondOperationMessage.Instance);
         Assert.That(_fsm.IsFinished, Is.True);
     }

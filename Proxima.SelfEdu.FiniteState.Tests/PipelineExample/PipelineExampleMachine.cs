@@ -15,6 +15,8 @@ public static class PipelineExampleMachine
         fsm.AddFinalState(PipelineStep.Finish);
         fsm.AddTransition<FirstOperationMessage>(PipelineStep.Start, PipelineStep.Middle);
         fsm.AddTransition<SecondOperationMessage>(PipelineStep.Middle, PipelineStep.Finish);
+        fsm.AddTransition<RetryOperationMessage>(PipelineStep.Start, PipelineStep.Start);
+        fsm.AddTransition<RetryOperationMessage>(PipelineStep.Middle, PipelineStep.Middle);
 
         return fsm;
     }
@@ -23,5 +25,7 @@ public static class PipelineExampleMachine
 public record FirstOperationMessage : TestMessage<FirstOperationMessage>;
 
 public record SecondOperationMessage : TestMessage<SecondOperationMessage>;
+
+public record RetryOperationMessage : TestMessage<RetryOperationMessage>;
 
 public enum PipelineStep { Start, Middle, Finish }
