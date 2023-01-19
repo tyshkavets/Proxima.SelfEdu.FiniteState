@@ -45,12 +45,27 @@ public class ExceptionHandlingTests
     }
 
     [Test]
-    public void Transition_ToTheUnknownState_IsNotAllowed()
+    public void Transition_FromTheUnknownState_IsNotAllowed()
+    {
+        Assert.Throws<FiniteStateMachineSetupException>(() =>
+            _fsm.AddTransition<OpenMessage>(WindowState.Unknown, WindowState.Opened));
+    }
+
+    [Test]
+    public void Transition_ToTheUnknownState_Throws()
     {
         Assert.Throws<FiniteStateMachineSetupException>(() =>
             _fsm.AddTransition<OpenMessage>(WindowState.Opened, WindowState.Unknown));
-
-        Assert.Throws<FiniteStateMachineSetupException>(() =>
-            _fsm.AddTransition<OpenMessage>(WindowState.Unknown, WindowState.Opened));
+    }
+    
+    [Test]
+    public void Transition_ToTheUnknownState_ViaDelegate_Throws()
+    {
+        _fsm.AddTransition<OpenMessage>(WindowState.Opened, _ => WindowState.Unknown);
+        
+        _fsm.Handle(OpenMessage.Instance);
+        
+        Assert.Throws<FiniteStateMachineOperationException>(() =>
+            _fsm.Handle(OpenMessage.Instance));
     }
 }

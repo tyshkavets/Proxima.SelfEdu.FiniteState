@@ -9,7 +9,7 @@ public class FiniteStateMachine<TState>
     private readonly IFiniteStateMachineEventHandler<TState> _eventHandler;
     private readonly HashSet<TState> _states;
     private readonly HashSet<TState> _finalStates;
-    private readonly IDictionary<(TState, Type), TState> _transitions;
+    private readonly IDictionary<(TState, Type), Func<IMessage, TState>> _transitions;
 
     private bool _isFinished;
     private bool _startingStateSet;
@@ -26,7 +26,7 @@ public class FiniteStateMachine<TState>
         _eventHandler = new DefaultFiniteStateMachineEventHandler<TState>(eventHandler);
         _states = new HashSet<TState>();
         _finalStates = new HashSet<TState>();
-        _transitions = new Dictionary<(TState, Type), TState>();
+        _transitions = new Dictionary<(TState, Type), Func<IMessage, TState>>();
     }
 
     /// <summary>
@@ -97,7 +97,15 @@ public class FiniteStateMachine<TState>
 
         if (_transitions.ContainsKey(key))
         {
-            CurrentState = _transitions[key];
+            var proposedState = _transitions[key](message);
+
+            if (!_states.Contains(proposedState))
+            {
+                throw new FiniteStateMachineOperationException(
+                    $"Attempting transition to unknown state {proposedState}");
+            }
+
+            CurrentState = proposedState;
             _eventHandler.OnTransition(message, _currentState);
         }
         else
@@ -114,7 +122,18 @@ public class FiniteStateMachine<TState>
     /// <param name="toState">State that machine ends up in if this rule is applied.</param>
     /// <typeparam name="TMessage">Type of message received.</typeparam>
     /// <exception cref="FiniteStateMachineSetupException">Thrown if rule cannot be setup.</exception>
-    public void AddTransition<TMessage>(TState fromState, TState toState)
+    public void AddTransition<TMessage>(TState fromState, TState toState) where TMessage : IMessage
+    {
+        if (!_states.Contains(toState))
+        {
+            throw new FiniteStateMachineSetupException(
+                $"Both ends of transition should be added first. Missing {toState}");
+        }
+
+        AddTransition<TMessage>(fromState, _ => toState);
+    }
+
+    public void AddTransition<TMessage>(TState fromState, Func<TMessage, TState> transitionRule) where TMessage : IMessage
     {
         var key = (fromState, typeof(TMessage));
 
@@ -124,9 +143,10 @@ public class FiniteStateMachine<TState>
                 $"Already registered transition from {fromState} on {typeof(TMessage).Name}");
         }
 
-        if (!_states.Contains(fromState) || !_states.Contains(toState))
+        if (!_states.Contains(fromState))
         {
-            throw new FiniteStateMachineSetupException("Both ends of transition should be added first.");
+            throw new FiniteStateMachineSetupException(
+                $"Both ends of transition should be added first. Missing {fromState}");
         }
 
         if (_finalStates.Contains(fromState))
@@ -134,9 +154,9 @@ public class FiniteStateMachine<TState>
             throw new FiniteStateMachineSetupException("Cannot transition from final state.");
         }
         
-        _transitions[key] = toState;
+        _transitions[key] = s => transitionRule((TMessage)s);
     }
-
+    
     /// <summary>
     /// Registers a state.
     /// </summary>
