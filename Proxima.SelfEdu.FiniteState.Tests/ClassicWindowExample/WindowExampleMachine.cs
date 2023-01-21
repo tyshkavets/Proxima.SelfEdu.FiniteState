@@ -9,11 +9,13 @@ public static class WindowExampleMachine
         IFiniteStateMachineEventHandler<WindowState> eventHandler)
     {
         var wrappedOptions = Options.Create(options);
-        var fsm = new FiniteStateMachine<WindowState>(wrappedOptions, eventHandler);
-        fsm.AddStartingState(WindowState.Closed);
-        fsm.AddState(WindowState.Opened);
-        fsm.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened);
-        fsm.AddTransition<CloseMessage>(WindowState.Opened, WindowState.Closed);
+        var fsm = FiniteStateMachine<WindowState>.Create(wrappedOptions, eventHandler, builder =>
+        {
+            builder.AddStartingState(WindowState.Closed);
+            builder.AddState(WindowState.Opened);
+            builder.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened);
+            builder.AddTransition<CloseMessage>(WindowState.Opened, WindowState.Closed);
+        });
 
         return fsm;
     }

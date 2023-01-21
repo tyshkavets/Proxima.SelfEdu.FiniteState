@@ -24,18 +24,18 @@ public class ExceptionHandlingTests
     [Test]
     public void Verify_AddingDuplicateStates_BehavesDifferently()
     {
-        Assert.Throws<FiniteStateMachineSetupException>(() => _fsm.AddState(WindowState.Opened));
-        Assert.DoesNotThrow(() => _oppositeFsm.AddState(WindowState.Opened));
+        Assert.Throws<FiniteStateMachineSetupException>(() => _fsm.With(b => b.AddState(WindowState.Opened)));
+        Assert.DoesNotThrow(() => _oppositeFsm.With(b => b.AddState(WindowState.Opened)));
     }
 
     [Test]
     public void Verify_AddingDuplicateTransitions_BehavesDifferently()
     {
         Assert.Throws<FiniteStateMachineSetupException>(() =>
-            _fsm.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened));
+            _fsm.With(b => b.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened)));
         
         Assert.DoesNotThrow(() =>
-            _oppositeFsm.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened));
+            _oppositeFsm.With(b => b.AddTransition<OpenMessage>(WindowState.Closed, WindowState.Opened)));
     }
 
     [Test]
@@ -48,24 +48,24 @@ public class ExceptionHandlingTests
     public void Transition_FromTheUnknownState_IsNotAllowed()
     {
         Assert.Throws<FiniteStateMachineSetupException>(() =>
-            _fsm.AddTransition<OpenMessage>(WindowState.Unknown, WindowState.Opened));
+            _fsm.With(b => b.AddTransition<OpenMessage>(WindowState.Unknown, WindowState.Opened)));
     }
 
     [Test]
     public void Transition_ToTheUnknownState_Throws()
     {
         Assert.Throws<FiniteStateMachineSetupException>(() =>
-            _fsm.AddTransition<OpenMessage>(WindowState.Opened, WindowState.Unknown));
+            _fsm.With(b => b.AddTransition<OpenMessage>(WindowState.Opened, WindowState.Unknown)));
     }
     
     [Test]
     public void Transition_ToTheUnknownState_ViaDelegate_Throws()
     {
-        _fsm.AddTransition<OpenMessage>(WindowState.Opened, _ => WindowState.Unknown);
+        var newFsm = _fsm.With(b => b.AddTransition<OpenMessage>(WindowState.Opened, _ => WindowState.Unknown));
         
-        _fsm.Handle(OpenMessage.Instance);
+        newFsm.Handle(OpenMessage.Instance);
         
         Assert.Throws<FiniteStateMachineOperationException>(() =>
-            _fsm.Handle(OpenMessage.Instance));
+            newFsm.Handle(OpenMessage.Instance));
     }
 }

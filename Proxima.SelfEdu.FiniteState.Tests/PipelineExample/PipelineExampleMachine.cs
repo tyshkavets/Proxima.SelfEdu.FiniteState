@@ -9,14 +9,16 @@ public static class PipelineExampleMachine
         IFiniteStateMachineEventHandler<PipelineStep> eventHandler)
     {
         var wrappedOptions = Options.Create(options);
-        var fsm = new FiniteStateMachine<PipelineStep>(wrappedOptions, eventHandler);
-        fsm.AddStartingState(PipelineStep.Start);
-        fsm.AddState(PipelineStep.Middle);
-        fsm.AddFinalState(PipelineStep.Finish);
-        fsm.AddTransition<FirstOperationMessage>(PipelineStep.Start, PipelineStep.Middle);
-        fsm.AddTransition<SecondOperationMessage>(PipelineStep.Middle, PipelineStep.Finish);
-        fsm.AddTransition<RetryOperationMessage>(PipelineStep.Start, PipelineStep.Start);
-        fsm.AddTransition<RetryOperationMessage>(PipelineStep.Middle, PipelineStep.Middle);
+        var fsm = FiniteStateMachine<PipelineStep>.Create(wrappedOptions, eventHandler, builder =>
+        {
+            builder.AddStartingState(PipelineStep.Start);
+            builder.AddState(PipelineStep.Middle);
+            builder.AddFinalState(PipelineStep.Finish);
+            builder.AddTransition<FirstOperationMessage>(PipelineStep.Start, PipelineStep.Middle);
+            builder.AddTransition<SecondOperationMessage>(PipelineStep.Middle, PipelineStep.Finish);
+            builder.AddTransition<RetryOperationMessage>(PipelineStep.Start, PipelineStep.Start);
+            builder.AddTransition<RetryOperationMessage>(PipelineStep.Middle, PipelineStep.Middle);
+        });
 
         return fsm;
     }

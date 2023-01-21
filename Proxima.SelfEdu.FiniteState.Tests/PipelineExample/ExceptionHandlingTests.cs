@@ -38,6 +38,6 @@ public class ExceptionHandlingTests
     public void Throws_WhenAddingTransition_FromFinalState()
     {
         Assert.Throws<FiniteStateMachineSetupException>(() =>
-            _fsm.AddTransition<FirstOperationMessage>(PipelineStep.Finish, PipelineStep.Start));
+            _fsm.With(b => b.AddTransition<FirstOperationMessage>(PipelineStep.Finish, PipelineStep.Start)));
     }
 }
