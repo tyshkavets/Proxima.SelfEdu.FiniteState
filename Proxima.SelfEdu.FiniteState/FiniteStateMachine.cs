@@ -26,38 +26,39 @@ public sealed class FiniteStateMachine<TState>
         _transitions = new Dictionary<(TState, Type), Func<IMessage, TState>>();
     }
 
-    public static FiniteStateMachine<TState> Create(Action<Builder> configure) => Create(default, default, configure);
+    public static FiniteStateMachine<TState> Create(Action<FiniteStateMachineBuilder> configure) =>
+        Create(default, default, configure);
 
     public static FiniteStateMachine<TState> Create(
         IOptions<FiniteStateMachineOptions> options,
         IFiniteStateMachineEventHandler<TState> eventHandler,
-        Action<Builder> configure)
+        Action<FiniteStateMachineBuilder> configure)
     {
-        var builder = new Builder(options, eventHandler);
+        var builder = new FiniteStateMachineBuilder(options, eventHandler);
         configure(builder);
 
         return builder.Build();
     }
 
-    public FiniteStateMachine<TState> With(Action<Builder> additionalConfiguration)
+    public FiniteStateMachine<TState> With(Action<FiniteStateMachineBuilder> additionalConfiguration)
     {
-        var builder = new Builder(this);
+        var builder = new FiniteStateMachineBuilder(this);
         additionalConfiguration(builder);
 
         return builder.Build();
     }
 
-    public class Builder
+    public class FiniteStateMachineBuilder
     {
         private readonly FiniteStateMachine<TState> _instance;
 
-        public Builder(IOptions<FiniteStateMachineOptions> options,
+        public FiniteStateMachineBuilder(IOptions<FiniteStateMachineOptions> options,
             IFiniteStateMachineEventHandler<TState> eventHandler)
         {
             _instance = new FiniteStateMachine<TState>(options, eventHandler);
         }
 
-        public Builder(FiniteStateMachine<TState> machine)
+        public FiniteStateMachineBuilder(FiniteStateMachine<TState> machine)
         {
             _instance = new FiniteStateMachine<TState>(Options.Create(machine._options),
                 machine._eventHandler);
@@ -70,7 +71,7 @@ public sealed class FiniteStateMachine<TState>
             _instance._startingStateSet = machine._startingStateSet;
             _instance._isFinished = machine._isFinished;
         }
-        
+
         /// <summary>
         /// Defines a state-transition rule. Machine in state fromState must transition
         /// to state toState when message of type TMessage is received.
@@ -79,7 +80,8 @@ public sealed class FiniteStateMachine<TState>
         /// <param name="toState">State that machine ends up in if this rule is applied.</param>
         /// <typeparam name="TMessage">Type of message received.</typeparam>
         /// <exception cref="FiniteStateMachineSetupException">Thrown if rule cannot be setup.</exception>
-        public void AddTransition<TMessage>(TState fromState, TState toState) where TMessage : IMessage
+        public FiniteStateMachineBuilder AddTransition<TMessage>(TState fromState, TState toState)
+            where TMessage : IMessage
         {
             if (!_instance._states.Contains(toState))
             {
@@ -88,9 +90,12 @@ public sealed class FiniteStateMachine<TState>
             }
 
             AddTransition<TMessage>(fromState, _ => toState);
+
+            return this;
         }
 
-        public void AddTransition<TMessage>(TState fromState, Func<TMessage, TState> transitionRule) where TMessage : IMessage
+        public FiniteStateMachineBuilder AddTransition<TMessage>(TState fromState,
+            Func<TMessage, TState> transitionRule) where TMessage : IMessage
         {
             var key = (fromState, typeof(TMessage));
 
@@ -110,10 +115,12 @@ public sealed class FiniteStateMachine<TState>
             {
                 throw new FiniteStateMachineSetupException("Cannot transition from final state.");
             }
-        
+
             _instance._transitions[key] = s => transitionRule((TMessage)s);
+
+            return this;
         }
-        
+
         /// <summary>
         /// Registers a state.
         /// </summary>
@@ -121,7 +128,7 @@ public sealed class FiniteStateMachine<TState>
         /// <exception cref="FiniteStateMachineSetupException">
         /// Thrown if duplicate state is added and this exception is allowed in options. On by default.
         /// </exception>
-        public void AddState(TState state)
+        public FiniteStateMachineBuilder AddState(TState state)
         {
             if (_instance._states.Contains(state) && _instance._options.ThrowIfDuplicateStatesAdded)
             {
@@ -129,6 +136,8 @@ public sealed class FiniteStateMachine<TState>
             }
 
             _instance._states.Add(state);
+
+            return this;
         }
 
         /// <summary>
@@ -136,10 +145,12 @@ public sealed class FiniteStateMachine<TState>
         /// Machine can have zero final states.
         /// </summary>
         /// <param name="state">Instance of a state. Must be unique.</param>
-        public void AddFinalState(TState state)
+        public FiniteStateMachineBuilder AddFinalState(TState state)
         {
             AddState(state);
             _instance._finalStates.Add(state);
+
+            return this;
         }
 
         /// <summary>
@@ -148,7 +159,7 @@ public sealed class FiniteStateMachine<TState>
         /// </summary>
         /// <param name="state">Starting state of the machine.</param>
         /// <exception cref="FiniteStateMachineSetupException">Thrown if another starting set is already set.</exception>
-        public void AddStartingState(TState state)
+        public FiniteStateMachineBuilder AddStartingState(TState state)
         {
             if (_instance._startingStateSet)
             {
@@ -158,6 +169,8 @@ public sealed class FiniteStateMachine<TState>
             AddState(state);
             _instance._currentState = state;
             _instance._startingStateSet = true;
+
+            return this;
         }
 
         internal FiniteStateMachine<TState> Build() => _instance;

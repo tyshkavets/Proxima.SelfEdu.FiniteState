@@ -7,8 +7,9 @@ public class StartingStateTests
     {
         var fsm = FiniteStateMachine<WindowState>.Create(builder =>
         {
-            builder.AddState(WindowState.Opened);
-            builder.AddState(WindowState.Closed);
+            builder
+                .AddState(WindowState.Opened)
+                .AddState(WindowState.Closed);
         });
 
         Assert.Throws<FiniteStateMachineSetupException>(() => fsm.Handle(OpenMessage.Instance));

@@ -11,13 +11,14 @@ public static class PipelineExampleMachine
         var wrappedOptions = Options.Create(options);
         var fsm = FiniteStateMachine<PipelineStep>.Create(wrappedOptions, eventHandler, builder =>
         {
-            builder.AddStartingState(PipelineStep.Start);
-            builder.AddState(PipelineStep.Middle);
-            builder.AddFinalState(PipelineStep.Finish);
-            builder.AddTransition<FirstOperationMessage>(PipelineStep.Start, PipelineStep.Middle);
-            builder.AddTransition<SecondOperationMessage>(PipelineStep.Middle, PipelineStep.Finish);
-            builder.AddTransition<RetryOperationMessage>(PipelineStep.Start, PipelineStep.Start);
-            builder.AddTransition<RetryOperationMessage>(PipelineStep.Middle, PipelineStep.Middle);
+            builder
+                .AddStartingState(PipelineStep.Start)
+                .AddState(PipelineStep.Middle)
+                .AddFinalState(PipelineStep.Finish)
+                .AddTransition<FirstOperationMessage>(PipelineStep.Start, PipelineStep.Middle)
+                .AddTransition<SecondOperationMessage>(PipelineStep.Middle, PipelineStep.Finish)
+                .AddTransition<RetryOperationMessage>(PipelineStep.Start, PipelineStep.Start)
+                .AddTransition<RetryOperationMessage>(PipelineStep.Middle, PipelineStep.Middle);
         });
 
         return fsm;
