@@ -3,10 +3,25 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
+        <PackageId>Proxima.SelfEdu.FiniteState</PackageId>
+        <Version>1.0.1</Version>
+        <Authors>Siarhei Tyshkavets</Authors>
+        <Company>Siarhei Tyshkavets - Proxima Project</Company>
+        <PackageTags>patterns state_based_machine fsm fsa finite_state_machine finite_state_automata</PackageTags>
+        <Description>
+            Package containing a simplistic implementation of Finite State Machine pattern.
+        </Description>
+        <RepositoryUrl>https://github.com/tyshkavets/Proxima.SelfEdu.FiniteState</RepositoryUrl>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\LICENSE;..\README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
 
 </Project>
